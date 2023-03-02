@@ -1,0 +1,67 @@
+# I want these to be saved. Just in case.
+
+
+CREATE TABLE assignments(
+assgn_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+title VARCHAR(255) NOT NULL,
+doarequestno CHAR(16) NOT NULL UNIQUE,
+isonsite BOOLEAN NOT NULL,
+host_entity VARCHAR(255),
+territory VARCHAR(255),
+duration SMALLINT UNSIGNED,
+extension BOOLEAN,
+publish_date DATETIME,
+assgn_expires DATETIME,
+start_date DATETIME,
+vol_category VARCHAR(255),
+min_age TINYINT UNSIGNED,
+max_age TINYINT UNSIGNED,
+ed_lvl VARCHAR(255),
+ed_specs VARCHAR(5000),
+years_of_xp TINYINT UNSIGNED,
+field_of_xp VARCHAR(5000));
+
+
+CREATE TABLE dutystations(
+ds_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+station VARCHAR(255) NOT NULL UNIQUE);
+
+
+CREATE TABLE assignments_dutystations(
+assgn_id INT UNSIGNED NOT NULL,
+ds_id INT UNSIGNED NOT NULL,
+assgns_per_station SMALLINT UNSIGNED NOT NULL,
+PRIMARY KEY (assgn_id, ds_id),
+CONSTRAINT Constr_assignments_dutystations_assgn_id_fk
+FOREIGN KEY assgn_id_fk (assgn_id) REFERENCES assignments(assgn_id)
+ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT Constr_assignments_dutystations_ds_id_fk
+FOREIGN KEY ds_id_fk (ds_id) REFERENCES dutystations(ds_id)
+ON DELETE CASCADE ON UPDATE CASCADE);
+
+
+CREATE TABLE languages(
+lang_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+lang VARCHAR(255) NOT NULL UNIQUE);
+
+
+CREATE TABLE assignments_languages(
+assgn_id INT UNSIGNED NOT NULL,
+lang_id INT UNSIGNED NOT NULL,
+level VARCHAR(255) NOT NULL,
+isrequired BOOLEAN NOT NULL,
+PRIMARY KEY (assgn_id, lang_id),
+CONSTRAINT Constr_assignments_languages_assgn_id_fk
+FOREIGN KEY assgn_id_fk (assgn_id) REFERENCES assignments(assgn_id)
+ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT Constr_assignments_languages_lang_id_fk
+FOREIGN KEY lang_id_fk (lang_id) REFERENCES languages(lang_id)
+ON DELETE CASCADE ON UPDATE CASCADE);
+
+
+CREATE TABLE errors_log(
+err_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+err_type VARCHAR(1000),
+err_body VARCHAR(5000),
+failed_doarequestno CHAR(16),
+current_datetime DATETIME NOT NULL);

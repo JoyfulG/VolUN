@@ -1,0 +1,6 @@
+venv/
+.idea/
+__pycache__/
+
+remote/server_config.py
+client_config.py
