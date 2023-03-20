@@ -13,19 +13,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setMinimumSize(500, 350)
 
         self.userpic = profile_picture('test_pp.jpg')
-        self.username = 'TestUsername'
+        self.username_label = profile_name('TestUsername')
+        self.home_button = home_btn()
 
         self.userpic_label = QtWidgets.QLabel()
-        self.userpic_label.setPixmap(self.userpic.scaled(120, 120))
+        self.userpic_label.setPixmap(self.userpic.scaled(150, 150))
+        self.userpic_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.docked_vbox = QtWidgets.QVBoxLayout()
         self.docked_vbox.addWidget(self.userpic_label)
+        self.docked_vbox.addWidget(self.username_label)
+        self.docked_vbox.addWidget(self.home_button)
+        self.docked_vbox.addStretch()
 
         self.docked_label = QtWidgets.QLabel()
-        self.docked_label.setMinimumSize(150, 150)
         self.docked_label.setLayout(self.docked_vbox)
 
         self.docked_menu = QtWidgets.QDockWidget()
+        self.docked_menu.setFixedWidth(330)
         self.docked_menu.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
         self.docked_menu.setTitleBarWidget(QtWidgets.QWidget())  # Getting rid of the docked_menu title bar.
         self.docked_menu.setWidget(self.docked_label)
@@ -55,6 +60,23 @@ def profile_picture(image):
     painter.end()
 
     return target
+
+
+def profile_name(name):
+    name_label = QtWidgets.QLabel()
+    name_label.setText(f'<b>{name}</b>')
+    name_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+    name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+    name_label.setFont(QtGui.QFont('Arial', 16))
+
+    return name_label
+
+
+def home_btn():
+    btn = QtWidgets.QPushButton('Home')
+
+    return btn
+
 
 
 if __name__ == '__main__':
