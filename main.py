@@ -2,6 +2,8 @@ import sys
 
 from PyQt6 import QtWidgets, QtGui, QtCore
 
+from profile import ProfilePicture
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -12,71 +14,62 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(1200, 700)
         self.setMinimumSize(500, 350)
 
-        self.userpic = profile_picture('test_pp.jpg')
-        self.username_label = profile_name('TestUsername')
-        self.home_button = home_btn()
-
-        self.userpic_label = QtWidgets.QLabel()
-        self.userpic_label.setPixmap(self.userpic.scaled(150, 150))
-        self.userpic_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-
-        self.docked_vbox = QtWidgets.QVBoxLayout()
-        self.docked_vbox.addWidget(self.userpic_label)
-        self.docked_vbox.addWidget(self.username_label)
-        self.docked_vbox.addWidget(self.home_button)
-        self.docked_vbox.addStretch()
-
-        self.docked_label = QtWidgets.QLabel()
-        self.docked_label.setLayout(self.docked_vbox)
-
-        self.docked_menu = QtWidgets.QDockWidget()
-        self.docked_menu.setFixedWidth(330)
-        self.docked_menu.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
-        self.docked_menu.setTitleBarWidget(QtWidgets.QWidget())  # Getting rid of the docked_menu title bar.
-        self.docked_menu.setWidget(self.docked_label)
+        docked_menu = self.main_window_docked_menu(self)
 
         self.setCentralWidget(QtWidgets.QTextEdit())
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.docked_menu)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, docked_menu)
 
         self.show()
 
+    @staticmethod
+    def main_window_docked_menu(self):
+        username_label = self.username_docked_menu_label()
+        userpic_label = self.userpic_docked_menu_label()
+        home_button = self.home_button_docked_menu()
 
-def profile_picture(image):
-    source = QtGui.QPixmap(image)
-    size = min(source.width(), source.height())
+        docked_vbox = QtWidgets.QVBoxLayout()
+        docked_vbox.insertSpacing(0, 20)
+        docked_vbox.addWidget(userpic_label)
+        docked_vbox.insertSpacing(2, 10)
+        docked_vbox.addWidget(username_label)
+        docked_vbox.insertSpacing(4, 50)
+        docked_vbox.addWidget(home_button)
+        docked_vbox.addStretch()
 
-    target = QtGui.QPixmap(size, size)
-    target.fill(QtCore.Qt.GlobalColor.transparent)
+        docked_label = QtWidgets.QLabel()
+        docked_label.setLayout(docked_vbox)
 
-    painter = QtGui.QPainter(target)
-    painter.setRenderHints(painter.RenderHint.Antialiasing)
-    path = QtGui.QPainterPath()
-    path.addEllipse(0, 0, size, size)
-    painter.setClipPath(path)
+        docked_menu = QtWidgets.QDockWidget()
+        docked_menu.setFixedWidth(330)
+        docked_menu.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+        docked_menu.setTitleBarWidget(QtWidgets.QWidget())  # Getting rid of the docked_menu title bar.
+        docked_menu.setWidget(docked_label)
 
-    source_rect = QtCore.QRect(0, 0, size, size)
-    source_rect.moveCenter(source.rect().center())
-    painter.drawPixmap(target.rect(), source, source_rect)
-    painter.end()
+        return docked_menu
 
-    return target
+    @staticmethod
+    def userpic_docked_menu_label():
+        userpic = ProfilePicture('test_pp.jpg', 150)
+        userpic.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
+        return userpic
 
-def profile_name(name):
-    name_label = QtWidgets.QLabel()
-    name_label.setText(f'<b>{name}</b>')
-    name_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-    name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
-    name_label.setFont(QtGui.QFont('Arial', 16))
+    @staticmethod
+    def username_docked_menu_label():
+        name = 'TestUsername'
+        name_label = QtWidgets.QLabel()
+        name_label.setText(f'<b>{name}</b>')
+        name_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        name_label.setFont(QtGui.QFont('Arial', 16))
 
-    return name_label
+        return name_label
 
+    @staticmethod
+    def home_button_docked_menu():
+        button = QtWidgets.QPushButton('Home')
 
-def home_btn():
-    btn = QtWidgets.QPushButton('Home')
-
-    return btn
-
+        return button
 
 
 if __name__ == '__main__':
