@@ -1,8 +1,12 @@
+#  TODO: Не получается через рамку сделать. Надо создавать clickable QLabel класс:
+#   https://stackoverflow.com/questions/45575626/make-qlabel-clickable
+
 import sys
 
 from PyQt6 import QtWidgets, QtGui, QtCore
 
 from profile import ProfilePicture
+from qlabel_clickable import QLabelClickable
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -25,7 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def main_window_docked_menu(self):
         username_label = self.username_docked_menu_label()
         userpic_label = self.userpic_docked_menu_label()
-        home_button = self.home_button_docked_menu()
+        home_option = self.home_option_docked_menu()
 
         docked_vbox = QtWidgets.QVBoxLayout()
         docked_vbox.insertSpacing(0, 20)
@@ -33,7 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
         docked_vbox.insertSpacing(2, 10)
         docked_vbox.addWidget(username_label)
         docked_vbox.insertSpacing(4, 50)
-        docked_vbox.addWidget(home_button)
+        docked_vbox.addWidget(home_option)
         docked_vbox.addStretch()
 
         docked_label = QtWidgets.QLabel()
@@ -65,11 +69,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return name_label
 
-    @staticmethod
-    def home_button_docked_menu():
-        button = QtWidgets.QPushButton('Home')
+    def home_option_docked_menu(self):
+        home_option = QLabelClickable(self.temp_func)
+        home_option.setText('<b>HOME<b/>')
+        home_option.setFont(QtGui.QFont('Arial', 20))
+        home_option.setIndent(20)
 
-        return button
+        return home_option
+
+    @staticmethod
+    def temp_func():
+        print('Clicked!')
 
 
 if __name__ == '__main__':
