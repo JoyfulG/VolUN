@@ -6,22 +6,22 @@ class ProfilePicture(QtWidgets.QLabel):
         super(ProfilePicture, self).__init__()
         source = QtGui.QPixmap(image)
         size = min(source.width(), source.height())
-
-        target = QtGui.QPixmap(size, size)
-        target.fill(QtCore.Qt.GlobalColor.transparent)
-
-        painter = QtGui.QPainter(target)
-        painter.setRenderHints(painter.RenderHint.Antialiasing)
-        path = QtGui.QPainterPath()
-        path.addEllipse(0, 0, size, size)
-        painter.setClipPath(path)
-
         source_rect = QtCore.QRect(0, 0, size, size)
         source_rect.moveCenter(source.rect().center())
+
+        target = QtGui.QPixmap(target_size, target_size)
+        target.fill(QtCore.Qt.GlobalColor.transparent)
+
+        path = QtGui.QPainterPath()
+        path.addEllipse(0, 0, target_size, target_size)
+
+        painter = QtGui.QPainter(target)
+        painter.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+        painter.setClipPath(path)
         painter.drawPixmap(target.rect(), source, source_rect)
         painter.end()
 
-        self.setPixmap(target.scaled(target_size, target_size))
+        self.setPixmap(target)
 
 
 if __name__ == '__main__':
