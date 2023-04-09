@@ -1,0 +1,12 @@
+[Unit]
+Description=VolUN Collector
+
+[Service]
+User=system_user_name
+Type=simple
+Restart=always
+RestartSec=60
+ExecStart=/path/to/project/venv/bin/python3 /path/to/project/server_main.py
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=VolUN Notifier Telegram Bot
+
+[Service]
+User=system_user_name
+Type=simple
+Restart=always
+RestartSec=60
+ExecStart=/path/to/project/venv/bin/python3 /path/to/project/telegram_notifier.py
+
+[Install]
+WantedBy=multi-user.target
