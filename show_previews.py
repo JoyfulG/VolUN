@@ -11,7 +11,9 @@ class ShowPreviews(QtWidgets.QScrollArea):
         widget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
         vbox = QtWidgets.QVBoxLayout()
 
-        for preview in previews:
+        for counter, preview in enumerate(previews):
+            if counter % 2 != 0:
+                preview.change_background_color('#b7dffd')
             vbox.addWidget(preview)
 
         vbox.addStretch(-1)

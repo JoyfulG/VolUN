@@ -1,3 +1,5 @@
+import re
+
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 from clickable_labels import QLabelClickableUnderline
@@ -10,7 +12,7 @@ class AssignmentPreview(QtWidgets.QFrame):
         self.setStyleSheet('QFrame#AssignmentPreviewParentFrame {'
                            'border: 2px solid black;'
                            'border-radius: 6px;'
-                           'background-color: #ffebcd'
+                           'background-color: #ffebcd;'
                            '}')
 
         assgn_title_label = QLabelClickableUnderline(self.temp_func)
@@ -79,6 +81,11 @@ class AssignmentPreview(QtWidgets.QFrame):
 
         self.setLayout(vbox)
 
+    def change_background_color(self, new_color):
+        original_stylesheet = self.styleSheet()
+        new_stylesheet = re.sub('(?<=background-color: ).*?(?=;)', new_color, original_stylesheet)
+        self.setStyleSheet(new_stylesheet)
+
     @staticmethod
     def temp_func():
         print('Clicked!')
@@ -106,6 +113,7 @@ if __name__ == '__main__':
     contents1 = AssignmentPreview(data1)
     contents2 = AssignmentPreview(data2)
     contents3 = AssignmentPreview(data3)
+    contents2.change_background_color('#b7dffd')
     vbox1 = QtWidgets.QVBoxLayout()
     vbox1.addWidget(contents1)
     vbox1.addWidget(contents2)
