@@ -54,12 +54,12 @@ class AssignmentPreview(QtWidgets.QFrame):
         territory_and_category_hbox.addStretch()
 
         age_range = QtWidgets.QLabel()
-        age_range.setText(f'<span style="color: #006241">Age:</span> {data["age"]}')
+        age_range.setText(f'<span style="color: #006241">Age:</span> {data["min_age"]} - {data["max_age"]}')
 
         languages_label = QtWidgets.QLabel()
         languages = []
-        for lang, req in data['languages'].items():
-            if req:
+        for lang, req in data['languages']:
+            if int(req):
                 lang = f'<b>{lang}</b>'
             languages.append(lang)
         languages_label.setText(f'<span style="color: #006241">Languages:</span> {", ".join(languages)}')
@@ -96,18 +96,18 @@ if __name__ == '__main__':
 
     data1 = {'title': 'Community youth and adolescent engagement Officer', 'assgn_type': 'Onsite',
              'territory': 'India', 'vol_category': 'International UN Volunteer Specialist',
-             'host_entity': 'MONUSCO', 'languages': {'French': False, 'English': True},
-             'age': '27 - 80', 'assgn_expires': '10 April 2023'}
+             'host_entity': 'MONUSCO', 'languages': [('French', 0), ('English', 1)],
+             'min_age': 27, 'max_age': 80, 'assgn_expires': '10 April 2023'}
 
     data2 = {'title': 'Community youth and adolescent engagement Officer', 'assgn_type': 'Online',
              'territory': 'Democratic Republic of the Congo', 'vol_category': 'National UN Volunteer Specialist',
-             'host_entity': 'UNICEF', 'languages': {'French': False, 'English': False},
-             'age': '27 - 80', 'assgn_expires': '10 April 2023'}
+             'host_entity': 'UNICEF', 'languages': [('French', 0), ('English', 0)],
+             'min_age': 27, 'max_age': 80, 'assgn_expires': '10 April 2023'}
 
     data3 = {'title': 'Community youth and adolescent engagement Officer', 'assgn_type': 'Archived',
              'territory': 'Germany', 'vol_category': None,
-             'host_entity': 'UNMISS', 'languages': {'French': True, 'English': False},
-             'age': '27 - 80', 'assgn_expires': '10 April 2023'}
+             'host_entity': 'UNMISS', 'languages': [('French', 1), ('English', 1)],
+             'min_age': 27, 'max_age': 80, 'assgn_expires': '10 April 2023'}
 
     app = QtWidgets.QApplication(sys.argv)
     contents1 = AssignmentPreview(data1)
