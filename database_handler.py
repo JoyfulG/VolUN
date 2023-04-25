@@ -47,6 +47,17 @@ class DatabaseHandler:
 
         return previews_info
 
+    @classmethod
+    def get_distinct_values(cls, column):
+        with cls.connection_info() as connection:
+            query = f'SELECT DISTINCT {column} FROM assignments'
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                dist_values = cursor.fetchall()
+        dist_values_sorted = sorted([key[column].strip() for key in dist_values])
+
+        return dist_values_sorted
+
 
 if __name__ == '__main__':
     import sys
