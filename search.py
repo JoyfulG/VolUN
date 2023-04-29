@@ -72,7 +72,8 @@ class SearchParamGroup(QtWidgets.QWidget):
         title_and_reset_hbox.addWidget(title_label)
         title_and_reset_hbox.addWidget(reset_button)
 
-        options_box = self.create_options_box(db_column)
+        options_box = self.OptionsBox(db_column)
+        options_box.itemClicked.connect(self.OptionsBox.on_item_clicked)
 
         group_vbox = QtWidgets.QVBoxLayout()
         group_vbox.addLayout(title_and_reset_hbox)
@@ -80,24 +81,31 @@ class SearchParamGroup(QtWidgets.QWidget):
 
         self.setLayout(group_vbox)
 
-    @staticmethod
-    def create_options_box(db_column_from_init):
-        """
-        checked чекбоксы перемещать вверх
-        """
+    class OptionsBox(QtWidgets.QListWidget):
+        def __init__(self, db_column_from_init):
+            super(SearchParamGroup.OptionsBox, self).__init__()
 
-        scroll_area_widget_vbox = QtWidgets.QVBoxLayout()
-        group_options = DatabaseHandler.get_distinct_values(db_column_from_init)
-        for option_name in group_options:
-            option_checkbox = QtWidgets.QCheckBox(option_name)
-            scroll_area_widget_vbox.addWidget(option_checkbox)
+            self.setSortingEnabled(True)
+            self.itemPressed[QtWidgets.QListWidgetItem].connect(
+                lambda item: item.setCheckState(
+                    QtCore.Qt.CheckState.Checked
+                    if item.checkState() == QtCore.Qt.CheckState.Unchecked
+                    else QtCore.Qt.CheckState.Unchecked
+                )
+            )
 
-        scroll_area = QtWidgets.QScrollArea()
-        scroll_area_widget = QtWidgets.QWidget()
-        scroll_area_widget.setLayout(scroll_area_widget_vbox)
-        scroll_area.setWidget(scroll_area_widget)
+            group_options = DatabaseHandler.get_distinct_values(db_column_from_init)
+            for option_name in group_options:
+                listitem = QtWidgets.QListWidgetItem(option_name)
+                listitem.setCheckState(QtCore.Qt.CheckState.Unchecked)
+                self.addItem(listitem)
 
-        return scroll_area
+        def on_item_clicked(self):
+            current_text = self.text()
+            if current_text[:1] == ' ':
+                self.setText(current_text[1:])
+            else:
+                self.setText(' ' + current_text)
 
 
 if __name__ == "__main__":
@@ -107,7 +115,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     w = QtWidgets.QMainWindow()
-    w.setCentralWidget(SearchParamGroup('Host entity', 'host_entity'))
+    w.setCentralWidget(SearchParamGroup('Territory', 'territory'))
     dock = QtWidgets.QDockWidget("Collapsible Demo")
     w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock)
     scroll = QtWidgets.QScrollArea()
