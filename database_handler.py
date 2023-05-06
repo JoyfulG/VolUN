@@ -48,15 +48,16 @@ class DatabaseHandler:
         return previews_info
 
     @classmethod
-    def get_distinct_values(cls, column):
+    def get_distinct_values(cls, column, table):
         with cls.connection_info() as connection:
-            query = f'SELECT DISTINCT {column} FROM assignments'
+            query = f'SELECT DISTINCT {column} FROM {table}'
             with connection.cursor() as cursor:
                 cursor.execute(query)
                 dist_values = cursor.fetchall()
-        dist_values_sorted = sorted([key[column].strip() for key in dist_values])
 
-        return dist_values_sorted
+        dist_values = [key[column] for key in dist_values if key[column] is not None]
+
+        return dist_values
 
 
 if __name__ == '__main__':
