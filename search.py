@@ -1,19 +1,19 @@
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from database_handler import DatabaseHandler
 
 
-class InitiateSearch(QtWidgets.QWidget):
+class SearchFilters(QtWidgets.QWidget):
     def __init__(self):
-        super(InitiateSearch, self).__init__()
+        super(SearchFilters, self).__init__()
 
         self.toggle_button = QtWidgets.QToolButton()
+        self.toggle_button.setText('SEARCH FILTERS')
         self.toggle_button.setCheckable(True)
-        self.toggle_button.setObjectName('InitiateSearchWidgetToggleButton')
-        self.toggle_button.setStyleSheet('QToolButton#InitiateSearchWidgetToggleButton { border: none; }')
+        self.toggle_button.setStyleSheet('QToolButton { border: none; }')
         self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
-        self.toggle_button.pressed.connect(self.on_pressed)
+        self.toggle_button.pressed.connect(self.on_toggle_button_pressed)
 
         self.content_area = QtWidgets.QScrollArea()
         self.content_area.setMaximumHeight(0)
@@ -33,12 +33,39 @@ class InitiateSearch(QtWidgets.QWidget):
         self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self, b'maximumHeight'))
         self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self.content_area, b'maximumHeight'))
 
-    def set_content_layout(self, layout):
-        self.content_area.setLayout(layout)
+        self.set_content_layout()
+
+    def set_content_layout(self):
+        content_layout = QtWidgets.QGridLayout()
+        search_param_lists = [
+            ('Host entity', 'host_entity', 'assignments', 0, 0),
+            ('Territory', 'territory', 'assignments', 0, 1),
+            ('Duty stations', 'station', 'dutystations', 0, 2),
+            ('Languages', 'lang', 'languages', 0, 3),
+            ('Volunteer category', 'vol_category', 'assignments', 1, 0),
+            ('Level of education', 'ed_lvl', 'assignments', 1, 1)
+        ]
+
+        for title, db_column, db_table, pos_row, pos_column in search_param_lists:
+            search_param_list = SearchParamList(title, db_column, db_table)
+            content_layout.addWidget(search_param_list, pos_row, pos_column)
+
+        search_params_additional = QtWidgets.QVBoxLayout()
+        age_param = SearchParamRanged('Age:')
+        duration_param = SearchParamRanged('Duration:')
+        published_param = SearchParamRanged('Assignment\npublished:')
+        search_params_additional.addLayout(age_param)
+        search_params_additional.addLayout(duration_param)
+        search_params_additional.addLayout(published_param)
+        content_layout.addLayout(search_params_additional, 1, 2)
+
+        self.content_area.setLayout(content_layout)
+
         collapsed_height = (self.sizeHint().height() - self.content_area.maximumHeight())
-        content_height = layout.sizeHint().height()
-        for i in range(self.toggle_animation.animationCount()):
-            animation = self.toggle_animation.animationAt(i)
+        content_height = content_layout.sizeHint().height()
+
+        for index in range(self.toggle_animation.animationCount()):
+            animation = self.toggle_animation.animationAt(index)
             animation.setDuration(500)
             animation.setStartValue(collapsed_height)
             animation.setEndValue(collapsed_height + content_height)
@@ -49,7 +76,7 @@ class InitiateSearch(QtWidgets.QWidget):
         content_animation.setEndValue(content_height)
 
     @QtCore.pyqtSlot()
-    def on_pressed(self):
+    def on_toggle_button_pressed(self):
         checked = self.toggle_button.isChecked()
         self.toggle_button.setArrowType(QtCore.Qt.ArrowType.UpArrow if not checked else QtCore.Qt.ArrowType.DownArrow)
         self.toggle_animation.setDirection(
@@ -60,14 +87,14 @@ class InitiateSearch(QtWidgets.QWidget):
         self.toggle_animation.start()
 
 
-class SearchParam(QtWidgets.QWidget):
-    def __init__(self, group_title, db_column):
-        super(SearchParam, self).__init__()
+class SearchParamList(QtWidgets.QWidget):
+    def __init__(self, param_title, db_column, db_table):
+        super(SearchParamList, self).__init__()
 
-        title_label = QtWidgets.QLabel(group_title)
+        title_label = QtWidgets.QLabel(param_title)
         title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        options_widget = SearchParamOptions(db_column)
+        options_widget = SearchParamListOptions(db_column, db_table)
 
         group_vbox = QtWidgets.QVBoxLayout()
         group_vbox.addWidget(title_label)
@@ -76,13 +103,13 @@ class SearchParam(QtWidgets.QWidget):
         self.setLayout(group_vbox)
 
 
-class SearchParamOptions(QtWidgets.QListWidget):
-    def __init__(self, db_column_from_parent):
-        super(SearchParamOptions, self).__init__()
+class SearchParamListOptions(QtWidgets.QListWidget):
+    def __init__(self, db_column_from_parent, db_table_from_parent):
+        super(SearchParamListOptions, self).__init__()
 
         self.setSortingEnabled(True)
 
-        group_options = DatabaseHandler.get_distinct_values(db_column_from_parent)
+        group_options = DatabaseHandler.get_distinct_values(db_column_from_parent, db_table_from_parent)
         for option_name in group_options:
             listitem = QtWidgets.QListWidgetItem(option_name)
             listitem.setCheckState(QtCore.Qt.CheckState.Unchecked)
@@ -97,6 +124,47 @@ class SearchParamOptions(QtWidgets.QListWidget):
             item.setCheckState(QtCore.Qt.CheckState.Unchecked)
         else:
             item.setCheckState(QtCore.Qt.CheckState.Checked)
+
+
+class SearchParamRanged(QtWidgets.QHBoxLayout):
+    def __init__(self, range_name):
+        super(SearchParamRanged, self).__init__()
+
+        label = QtWidgets.QLabel(range_name)
+        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        input_from = self.input_widget()
+        dash_label = QtWidgets.QLabel('—')
+        input_to = self.input_widget()
+
+        self.addStretch()
+        self.addWidget(label)
+        self.addWidget(input_from)
+        self.addWidget(dash_label)
+        self.addWidget(input_to)
+
+    @staticmethod
+    def input_widget():
+        input_line = QtWidgets.QLineEdit()
+
+        return input_line
+
+
+class SearchParamStatus(QtWidgets.QFrame):
+    def __init__(self):
+        super(SearchParamStatus, self).__init__()
+
+        self.setFrameShape(QtWidgets.QFrame.Shape.Box)
+
+        vbox = QtWidgets.QVBoxLayout()
+        status_options_names = ['Online', 'Onsite', 'Archived']
+
+        for name in status_options_names:
+            status_option = QtWidgets.QCheckBox(name)
+            vbox.addWidget(status_option)
+
+        vbox.addStretch(-1)
+
+        self.setLayout(vbox)
 
 
 class SelectedSearchOption(QtWidgets.QPushButton):
@@ -124,41 +192,18 @@ class SelectedSearchOption(QtWidgets.QPushButton):
 
 if __name__ == "__main__":
     import sys
-    import random
 
     app = QtWidgets.QApplication(sys.argv)
 
-    w = QtWidgets.QMainWindow()
-    w.setCentralWidget(SearchParam('Territory', 'territory'))
-    dock = QtWidgets.QDockWidget("Collapsible Demo")
-    w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock)
-    scroll = QtWidgets.QScrollArea()
-    dock.setWidget(scroll)
-    content = QtWidgets.QWidget()
-    scroll.setWidget(content)
-    scroll.setWidgetResizable(True)
-    vlay = QtWidgets.QVBoxLayout(content)
-    for a in range(10):
-        box = InitiateSearch()
-        box.toggle_button.setText('SEARCH')
-        vlay.addWidget(box)
-        lay = QtWidgets.QVBoxLayout()
-        for b in range(8):
-            labell = QtWidgets.QLabel("{}".format(b))
-            color = QtGui.QColor(*[random.randint(0, 255) for _ in range(3)])
-            labell.setStyleSheet(
-                "background-color: {}; color : white;".format(color.name())
-            )
-            labell.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            lay.addWidget(labell)
+    filters = SearchFilters()
 
-        box.set_content_layout(lay)
+    main_window = QtWidgets.QMainWindow()
+    main_window.setCentralWidget(filters)
 
     selected_grid = QtWidgets.QGridLayout()
     selected_grid.addWidget(SelectedSearchOption('OOOO'))
     selected_grid.addWidget(SelectedSearchOption('1111'))
-    vlay.addLayout(selected_grid)
-    vlay.addStretch()
-    w.resize(640, 480)
-    w.show()
+
+    main_window.resize(1280, 720)
+    main_window.show()
     sys.exit(app.exec())
