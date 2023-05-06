@@ -16,7 +16,7 @@ class AssignmentPreview(QtWidgets.QFrame):
                            '}')
 
         assgn_title_label = QLabelClickableUnderline(self.temp_func)
-        assgn_title_label.setText(data['title'])
+        assgn_title_label.setText(data['title'].strip())
         assgn_title_label.setFont(QtGui.QFont('Arial', 14))
 
         assgn_type_label = QtWidgets.QLabel()
@@ -54,7 +54,11 @@ class AssignmentPreview(QtWidgets.QFrame):
         territory_and_category_hbox.addStretch()
 
         age_range = QtWidgets.QLabel()
-        age_range.setText(f'<span style="color: #006241">Age:</span> {data["min_age"]} - {data["max_age"]}')
+        if data['min_age'] is None or data['max_age'] is None:
+            age_range_value = 'Not specified'
+        else:
+            age_range_value = f'{data["min_age"]} - {data["max_age"]}'
+        age_range.setText(f'<span style="color: #006241">Age:</span> {age_range_value}')
 
         languages_label = QtWidgets.QLabel()
         languages = []
@@ -94,17 +98,17 @@ class AssignmentPreview(QtWidgets.QFrame):
 if __name__ == '__main__':
     import sys
 
-    data1 = {'title': 'Community youth and adolescent engagement Officer', 'assgn_type': 'Onsite',
+    data1 = {'title': '  ICT Specialist', 'assgn_type': 'Onsite',
              'territory': 'India', 'vol_category': 'International UN Volunteer Specialist',
              'host_entity': 'MONUSCO', 'languages': [('French', 0), ('English', 1)],
-             'min_age': 27, 'max_age': 80, 'assgn_expires': '10 April 2023'}
+             'min_age': None, 'max_age': 80, 'assgn_expires': '10 April 2023'}
 
     data2 = {'title': 'Community youth and adolescent engagement Officer', 'assgn_type': 'Online',
              'territory': 'Democratic Republic of the Congo', 'vol_category': 'National UN Volunteer Specialist',
              'host_entity': 'UNICEF', 'languages': [('French', 0), ('English', 0)],
              'min_age': 27, 'max_age': 80, 'assgn_expires': '10 April 2023'}
 
-    data3 = {'title': 'Community youth and adolescent engagement Officer', 'assgn_type': 'Archived',
+    data3 = {'title': 'Registration Assistant  ', 'assgn_type': 'Archived',
              'territory': 'Germany', 'vol_category': None,
              'host_entity': 'UNMISS', 'languages': [('French', 1), ('English', 1)],
              'min_age': 27, 'max_age': 80, 'assgn_expires': '10 April 2023'}
