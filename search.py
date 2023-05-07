@@ -50,13 +50,19 @@ class SearchFilters(QtWidgets.QWidget):
             search_param_list = SearchParamList(title, db_column, db_table)
             content_layout.addWidget(search_param_list, pos_row, pos_column)
 
+        status_param = SearchParamStatus()
+
+        age_param = SearchParamRanged('Age:', 30, 2)
+        duration_param = SearchParamRanged('Duration:', 40, 4)
+        published_param = SearchParamRanged('Assignment\npublished:', 100, 10)
+
         search_params_additional = QtWidgets.QVBoxLayout()
-        age_param = SearchParamRanged('Age:')
-        duration_param = SearchParamRanged('Duration:')
-        published_param = SearchParamRanged('Assignment\npublished:')
+        search_params_additional.addStretch()
         search_params_additional.addLayout(age_param)
         search_params_additional.addLayout(duration_param)
         search_params_additional.addLayout(published_param)
+        search_params_additional.addWidget(status_param)
+
         content_layout.addLayout(search_params_additional, 1, 2)
 
         self.content_area.setLayout(content_layout)
@@ -127,24 +133,26 @@ class SearchParamListOptions(QtWidgets.QListWidget):
 
 
 class SearchParamRanged(QtWidgets.QHBoxLayout):
-    def __init__(self, range_name):
+    def __init__(self, range_name, input_width, input_length):
         super(SearchParamRanged, self).__init__()
 
         label = QtWidgets.QLabel(range_name)
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-        input_from = self.input_widget()
+        input_from = self.input_widget(input_width, input_length)
         dash_label = QtWidgets.QLabel('—')
-        input_to = self.input_widget()
+        input_to = self.input_widget(input_width, input_length)
 
-        self.addStretch()
         self.addWidget(label)
         self.addWidget(input_from)
         self.addWidget(dash_label)
         self.addWidget(input_to)
+        self.addStretch()
 
     @staticmethod
-    def input_widget():
+    def input_widget(input_width_from_init, input_length_from_init):
         input_line = QtWidgets.QLineEdit()
+        input_line.setMaximumWidth(input_width_from_init)
+        input_line.setMaxLength(input_length_from_init)
 
         return input_line
 
@@ -153,18 +161,16 @@ class SearchParamStatus(QtWidgets.QFrame):
     def __init__(self):
         super(SearchParamStatus, self).__init__()
 
-        self.setFrameShape(QtWidgets.QFrame.Shape.Box)
+        self.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
 
-        vbox = QtWidgets.QVBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         status_options_names = ['Online', 'Onsite', 'Archived']
 
         for name in status_options_names:
             status_option = QtWidgets.QCheckBox(name)
-            vbox.addWidget(status_option)
+            hbox.addWidget(status_option)
 
-        vbox.addStretch(-1)
-
-        self.setLayout(vbox)
+        self.setLayout(hbox)
 
 
 class SelectedSearchOption(QtWidgets.QPushButton):
