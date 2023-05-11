@@ -41,9 +41,9 @@ class SearchFilters(QtWidgets.QWidget):
             ('Host entity', 'host_entity', 'assignments', 0, 0),
             ('Territory', 'territory', 'assignments', 0, 1),
             ('Duty stations', 'station', 'dutystations', 0, 2),
-            ('Languages', 'lang', 'languages', 0, 3),
-            ('Volunteer category', 'vol_category', 'assignments', 1, 0),
-            ('Level of education', 'ed_lvl', 'assignments', 1, 1)
+            ('Languages', 'lang', 'languages', 1, 0),
+            ('Volunteer category', 'vol_category', 'assignments', 1, 1),
+            ('Level of education', 'ed_lvl', 'assignments', 1, 2)
         ]
 
         for title, db_column, db_table, pos_row, pos_column in search_param_lists:
@@ -51,19 +51,24 @@ class SearchFilters(QtWidgets.QWidget):
             content_layout.addWidget(search_param_list, pos_row, pos_column)
 
         status_param = SearchParamStatus()
+        age_param = SearchParamRanged('Age:', 25, 2)
+        duration_param = SearchParamRanged('Duration:', 35, 4)
+        published_param = SearchParamRangedDate('Assignment published:', 0, 0)
 
-        age_param = SearchParamRanged('Age:', 30, 2)
-        duration_param = SearchParamRanged('Duration:', 40, 4)
-        published_param = SearchParamRanged('Assignment\npublished:', 100, 10)
+        age_and_duration_hbox = QtWidgets.QHBoxLayout()
+        age_and_duration_hbox.addLayout(age_param)
+        age_and_duration_hbox.addLayout(duration_param)
 
         search_params_additional = QtWidgets.QVBoxLayout()
-        search_params_additional.addStretch()
-        search_params_additional.addLayout(age_param)
-        search_params_additional.addLayout(duration_param)
-        search_params_additional.addLayout(published_param)
+        search_params_additional.addSpacing(31)
         search_params_additional.addWidget(status_param)
+        search_params_additional.addSpacing(20)
+        search_params_additional.addLayout(age_and_duration_hbox)
+        search_params_additional.addSpacing(20)
+        search_params_additional.addLayout(published_param)
+        search_params_additional.addStretch()
 
-        content_layout.addLayout(search_params_additional, 1, 2)
+        content_layout.addLayout(search_params_additional, 0, 3)
 
         self.content_area.setLayout(content_layout)
 
@@ -132,27 +137,39 @@ class SearchParamListOptions(QtWidgets.QListWidget):
             item.setCheckState(QtCore.Qt.CheckState.Checked)
 
 
-class SearchParamRanged(QtWidgets.QHBoxLayout):
+class SearchParamRanged(QtWidgets.QVBoxLayout):
     def __init__(self, range_name, input_width, input_length):
         super(SearchParamRanged, self).__init__()
 
         label = QtWidgets.QLabel(range_name)
-        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
         input_from = self.input_widget(input_width, input_length)
         dash_label = QtWidgets.QLabel('—')
         input_to = self.input_widget(input_width, input_length)
+        input_hbox = QtWidgets.QHBoxLayout()
+        input_hbox.addStretch()
+        input_hbox.addWidget(input_from)
+        input_hbox.addWidget(dash_label)
+        input_hbox.addWidget(input_to)
+        input_hbox.addStretch()
 
         self.addWidget(label)
-        self.addWidget(input_from)
-        self.addWidget(dash_label)
-        self.addWidget(input_to)
-        self.addStretch()
+        self.addLayout(input_hbox)
 
     @staticmethod
     def input_widget(input_width_from_init, input_length_from_init):
         input_line = QtWidgets.QLineEdit()
         input_line.setMaximumWidth(input_width_from_init)
         input_line.setMaxLength(input_length_from_init)
+
+        return input_line
+
+
+class SearchParamRangedDate(SearchParamRanged):
+    @staticmethod
+    def input_widget(input_width_from_init, input_length_from_ini):
+        input_line = QtWidgets.QDateEdit()
 
         return input_line
 
