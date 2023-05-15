@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtWidgets
 
-from selected_search_param import SelectedSearchParam
+from search.selected_search_param import SelectedSearchParam
 
 
 class FlowLayout(QtWidgets.QLayout):
@@ -109,7 +109,6 @@ class FlowLayout(QtWidgets.QLayout):
 
 if __name__ == '__main__':
     import sys
-
 
     class MainWindow(QtWidgets.QMainWindow):
         def __init__(self, text, parent=None):

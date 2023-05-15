@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore
 
-from search_filters import SearchParamList, SearchParamRanged, SearchParamAssgnType
-from search_buttons import StartSearchButton, ClearAllButton
+from search.search_filters import SearchParamList, SearchParamRanged, SearchParamAssgnType
+from search.search_buttons import StartSearchButton, ClearAllButton
 
 
 class SearchFiltersWidget(QtWidgets.QWidget):
