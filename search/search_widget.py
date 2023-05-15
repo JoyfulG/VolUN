@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
-from search_filters_widget import SearchFiltersWidget
-from selected_search_param import SelectedSearchParam
+from search.search_filters_widget import SearchFiltersWidget
+from search.selected_search_params_widget import SelectedSearchParamsWidget
 
 
 class SearchWidget(QtWidgets.QWidget):
@@ -10,17 +10,11 @@ class SearchWidget(QtWidgets.QWidget):
 
         vbox = QtWidgets.QVBoxLayout()
         filters = SearchFiltersWidget()
+        selected = SelectedSearchParamsWidget()
         vbox.addWidget(filters)
-
-        # temp_start
-        # Should be SelectedSearchParamsWidget instead
-        selected = QtWidgets.QHBoxLayout()
-        selected.addWidget(SelectedSearchParam('OOOO'))
-        selected.addWidget(SelectedSearchParam('1111'))
-        vbox.addLayout(selected)
-        # temp_finish
-
+        vbox.addWidget(selected)
         vbox.addStretch()
+
         self.setLayout(vbox)
 
 
