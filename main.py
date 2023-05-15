@@ -3,7 +3,10 @@ import sys
 from PyQt6 import QtWidgets, QtGui, QtCore
 
 from profile import ProfilePicture
-from qlabel_clickable import QLabelClickable
+from clickable_labels import QLabelClickable
+from show_previews import ShowPreviews
+from database_handler import DatabaseHandler
+from search.search_widget import SearchWidget
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -15,15 +18,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(1200, 700)
         self.setMinimumSize(500, 350)
 
-        docked_menu = self.docked_menu_main_window()
+        docked_menu = self.docked_menu()
+        main_area = self.central_widget()
 
-        self.setCentralWidget(QtWidgets.QTextEdit())
+        self.setCentralWidget(main_area)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, docked_menu)
 
         self.show()
 
+    @staticmethod
+    def central_widget():
+        search_widget = SearchWidget()
+        previews_widget = ShowPreviews(DatabaseHandler.get_previews_info())
+
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addWidget(search_widget)
+        vbox.addWidget(previews_widget)
+        cent_widget = QtWidgets.QWidget()
+        cent_widget.setLayout(vbox)
+
+        return cent_widget
+
     @classmethod
-    def docked_menu_main_window(cls):
+    def docked_menu(cls):
         username_label = cls.username_label_docked_menu()
         userpic_label = cls.userpic_label_docked_menu()
         home_option_hbox = cls.docked_menu_option('HOME', cls.temp_func)
