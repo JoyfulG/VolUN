@@ -14,7 +14,7 @@ class SearchFiltersWidget(QtWidgets.QWidget):
         self.toggle_button.setStyleSheet('QToolButton { border: none; }')
         self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
-        self.toggle_button.pressed.connect(self.on_toggle_button_pressed)
+        self.toggle_button.clicked.connect(self.on_toggle_button_clicked)
 
         self.content_area = QtWidgets.QScrollArea()
         self.content_area.setMaximumHeight(0)
@@ -95,12 +95,12 @@ class SearchFiltersWidget(QtWidgets.QWidget):
         content_animation.setEndValue(content_height)
 
     @QtCore.pyqtSlot()
-    def on_toggle_button_pressed(self):
+    def on_toggle_button_clicked(self):
         checked = self.toggle_button.isChecked()
-        self.toggle_button.setArrowType(QtCore.Qt.ArrowType.UpArrow if not checked else QtCore.Qt.ArrowType.DownArrow)
+        self.toggle_button.setArrowType(QtCore.Qt.ArrowType.UpArrow if checked else QtCore.Qt.ArrowType.DownArrow)
         self.toggle_animation.setDirection(
             QtCore.QAbstractAnimation.Direction.Forward
-            if not checked
+            if checked
             else QtCore.QAbstractAnimation.Direction.Backward
         )
         self.toggle_animation.start()
