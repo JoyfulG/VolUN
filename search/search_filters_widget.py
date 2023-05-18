@@ -2,6 +2,7 @@ from PyQt6 import QtWidgets, QtCore
 
 from search.search_filters import SearchParamList, SearchParamRanged, SearchParamAssgnType
 from search.search_buttons import StartSearchButton, ClearAllButton
+from search.selected_search_params_widget import SelectedSearchParamsWidget
 
 
 class SearchFiltersWidget(QtWidgets.QWidget):
@@ -22,11 +23,14 @@ class SearchFiltersWidget(QtWidgets.QWidget):
         self.content_area.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         self.content_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
 
+        selected_options = SelectedSearchParamsWidget()
+
         vbox = QtWidgets.QVBoxLayout()
         vbox.setSpacing(0)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.addWidget(self.toggle_button)
         vbox.addWidget(self.content_area)
+        vbox.addWidget(selected_options)
         self.setLayout(vbox)
 
         self.toggle_animation = QtCore.QParallelAnimationGroup(self)
