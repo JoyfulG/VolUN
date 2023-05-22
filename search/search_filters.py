@@ -31,14 +31,20 @@ class SearchParamList(QtWidgets.QWidget):
                 self.addItem(listitem)
 
             self.itemPressed.connect(self.toggle_item)
+            self.itemChanged.connect(self.on_item_changed)
 
         def toggle_item(self, item):
-            if not item:  # Check later if this condition is needed here at all
-                return
             if item.checkState() == QtCore.Qt.CheckState.Checked:
                 item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             else:
                 item.setCheckState(QtCore.Qt.CheckState.Checked)
+
+        def on_item_changed(self, item):
+            selected_options = self.parent().parent().parent().layout().itemAt(2).widget()
+            if item.checkState() == QtCore.Qt.CheckState.Checked:
+                selected_options.add_item(item)
+            else:
+                selected_options.remove_item(item)
 
 
 class SearchParamRanged(QtWidgets.QVBoxLayout):
