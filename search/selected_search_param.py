@@ -23,4 +23,4 @@ class SelectedSearchParam(QtWidgets.QPushButton):
         self.clicked.connect(self.on_clicked)
 
     def on_clicked(self):
-        print('Bubble clicked!')
+        self.item.setCheckState(QtCore.Qt.CheckState.Unchecked)
