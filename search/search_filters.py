@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from database_handler import DatabaseHandler
 
@@ -42,7 +42,7 @@ class SearchParamList(QtWidgets.QWidget):
         def on_item_changed(self, item):
             selected_options = self.parent().parent().parent().layout().itemAt(2).widget()
             if item.checkState() == QtCore.Qt.CheckState.Checked:
-                selected_options.add_item(item)
+                selected_options.add_checkbox_item(item)
             else:
                 selected_options.remove_item(item)
 
@@ -67,13 +67,19 @@ class SearchParamRanged(QtWidgets.QVBoxLayout):
         self.addWidget(label)
         self.addLayout(input_hbox)
 
-    @staticmethod
-    def input_widget(input_width_from_init, input_length_from_init):
+    def input_widget(self, input_width_from_init, input_length_from_init):
         input_line = QtWidgets.QLineEdit()
+        regexp = QtCore.QRegularExpression('(^[0-9]+$|^$)')
+        input_line.setValidator(QtGui.QRegularExpressionValidator(regexp))
         input_line.setMaximumWidth(input_width_from_init)
         input_line.setMaxLength(input_length_from_init)
+        input_line.editingFinished.connect(self.on_text_changed)
 
         return input_line
+
+    def on_text_changed(self):
+        selected_options = self.parent().parent().parent().parent().parent().layout().itemAt(2).widget()
+        selected_options.add_ranged_item(self)
 
 
 class SearchParamAssgnType(QtWidgets.QFrame):
@@ -96,6 +102,6 @@ class SearchParamAssgnType(QtWidgets.QFrame):
         selected_options = self.parent().parent().layout().itemAt(2).widget()
         checkbox = self.sender()
         if checkbox.checkState() == QtCore.Qt.CheckState.Checked:
-            selected_options.add_item(checkbox)
+            selected_options.add_checkbox_item(checkbox)
         else:
             selected_options.remove_item(checkbox)
