@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore
 
 from search.flow_layout import FlowLayout
-from search.selected_search_param import SelectedSearchParam
+from search.selected_search_param import SelectedSearchParamCheckbox, SelectedSearchParamRanged
 
 
 class SelectedSearchParamsWidget(QtWidgets.QScrollArea):
@@ -17,8 +17,12 @@ class SelectedSearchParamsWidget(QtWidgets.QScrollArea):
         self.layout = FlowLayout(widget)
         self.setWidget(widget)
 
-    def add_item(self, item):
-        bubble = SelectedSearchParam(item)
+    def add_checkbox_item(self, item):
+        bubble = SelectedSearchParamCheckbox(item)
+        self.layout.addWidget(bubble)
+
+    def add_ranged_item(self, item):
+        bubble = SelectedSearchParamRanged(item)
         self.layout.addWidget(bubble)
 
     def remove_item(self, item):

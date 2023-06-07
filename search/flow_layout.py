@@ -120,7 +120,9 @@ if __name__ == '__main__':
             layout = FlowLayout(widget)
             self.words = []
             for word in text.split():
-                label = SelectedSearchParam(word)
+                item = QtWidgets.QCheckBox(word)
+                label = SelectedSearchParam(item)
+                label.setText(word)
                 self.words.append(label)
                 layout.addWidget(label)
             self.mainArea.setWidget(widget)
