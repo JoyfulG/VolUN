@@ -87,6 +87,15 @@ class SearchParamAssgnType(QtWidgets.QFrame):
 
         for name in status_options_names:
             status_option = QtWidgets.QCheckBox(name)
+            status_option.stateChanged.connect(self.on_option_state_changed)
             hbox.addWidget(status_option)
 
         self.setLayout(hbox)
+
+    def on_option_state_changed(self):
+        selected_options = self.parent().parent().layout().itemAt(2).widget()
+        checkbox = self.sender()
+        if checkbox.checkState() == QtCore.Qt.CheckState.Checked:
+            selected_options.add_item(checkbox)
+        else:
+            selected_options.remove_item(checkbox)
