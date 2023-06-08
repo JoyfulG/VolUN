@@ -25,6 +25,14 @@ class SelectedSearchParamsWidget(QtWidgets.QScrollArea):
         bubble = SelectedSearchParamRanged(item)
         self.layout.addWidget(bubble)
 
+    def change_ranged_item(self, item, index):
+        input_from = item.input_from.text()
+        input_to = item.input_to.text()
+        bubble = self.layout.itemAt(index).widget()
+        bubble.input_from_text = input_from if input_from else '0'
+        bubble.input_to_text = input_to if input_to else str(bubble.max_value)
+        bubble.setText(bubble.title_text + bubble.input_from_text + ' - ' + bubble.input_to_text)
+
     def remove_item(self, item):
         index = self.layout.count()
         while index:

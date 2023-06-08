@@ -54,14 +54,14 @@ class SearchParamRanged(QtWidgets.QVBoxLayout):
         label = QtWidgets.QLabel(range_name)
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        input_from = self.input_widget(input_width, input_length)
+        self.input_from = self.input_widget(input_width, input_length)
         dash_label = QtWidgets.QLabel('—')
-        input_to = self.input_widget(input_width, input_length)
+        self.input_to = self.input_widget(input_width, input_length)
         input_hbox = QtWidgets.QHBoxLayout()
         input_hbox.addStretch()
-        input_hbox.addWidget(input_from)
+        input_hbox.addWidget(self.input_from)
         input_hbox.addWidget(dash_label)
-        input_hbox.addWidget(input_to)
+        input_hbox.addWidget(self.input_to)
         input_hbox.addStretch()
 
         self.addWidget(label)
@@ -73,13 +73,24 @@ class SearchParamRanged(QtWidgets.QVBoxLayout):
         input_line.setValidator(QtGui.QRegularExpressionValidator(regexp))
         input_line.setMaximumWidth(input_width_from_init)
         input_line.setMaxLength(input_length_from_init)
-        input_line.editingFinished.connect(self.on_text_changed)
+        input_line.textChanged.connect(self.on_text_changed)
 
         return input_line
 
     def on_text_changed(self):
         selected_options = self.parent().parent().parent().parent().parent().layout().itemAt(2).widget()
-        selected_options.add_ranged_item(self)
+        index = selected_options.layout.count()
+        while index:
+            layout_item = selected_options.layout.itemAt(index - 1)
+            if self == layout_item.widget().item:
+                if self.input_from.text() == '' and self.input_to.text() == '':
+                    selected_options.remove_item(self)
+                    break
+                selected_options.change_ranged_item(self, index - 1)
+                break
+            index -= 1
+        else:
+            selected_options.add_ranged_item(self)
 
 
 class SearchParamAssgnType(QtWidgets.QFrame):
