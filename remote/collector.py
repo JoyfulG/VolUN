@@ -95,7 +95,7 @@ def assignment_info(identifier):
     # The age range is not specified for every assignment and is retrieved from another source.
     vol_category_code = assgn_info['volunteersCategory']['value']['code']
     if vol_category_code is not None:
-        age_range_url = f'https://app.unv.org/api/mastertables/masterTables/Category/values/{vol_category_code}/' \
+        age_range_url = f'https://app.unv.org/api/backoffice/masterTables/Category/values/{vol_category_code}/' \
                         f'children/ElegibilityCriteria/languages/EN'
         response_age_range = requests.get(age_range_url, headers=headers)
         age_range_info = json.loads(response_age_range.text)['values'][0]['props']
