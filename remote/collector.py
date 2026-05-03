@@ -81,7 +81,7 @@ def assignment_info(identifier):
         'publish_date': assgn_info['publishDate'],
         'assgn_expires': assgn_info['sourcingEndDate'],
         'start_date': assgn_info['startDate'],
-        'vol_category': assgn_info['volunteersCategory']['label'],
+        'vol_category': assgn_info['volunteersCategoryDetails']['categoryName']['label'], 
         'min_age': None,
         'max_age': None,
         'ed_lvl': assgn_info['requiredEducation']['label'],
@@ -93,12 +93,12 @@ def assignment_info(identifier):
     }
 
     # The age range is not specified for every assignment and is retrieved from another source.
-    vol_category_code = assgn_info['volunteersCategory']['value']['code']
+    vol_category_code = assgn_info['volunteersCategoryCode']
     if vol_category_code is not None:
         age_range_url = f'https://app.unv.org/api/backoffice/masterTables/Category/values/{vol_category_code}/' \
                         f'children/ElegibilityCriteria/languages/EN'
         response_age_range = requests.get(age_range_url, headers=headers)
-        age_range_info = json.loads(response_age_range.text)['values'][0]['props']
+        age_range_info = json.loads(response_age_range.text)['values'][2]['props']
         collected_info['min_age'] = age_range_info['minValue']
         collected_info['max_age'] = age_range_info['maxValue']
 
@@ -129,3 +129,6 @@ def assignment_info(identifier):
         collected_info['languages'] = {'Not specified': {'level': 'Not specified', 'isrequired': False}}
 
     return collected_info
+
+if __name__ == '__main__':
+    print(assignment_info('1784888021268672'))
