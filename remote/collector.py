@@ -81,7 +81,7 @@ def assignment_info(identifier):
         'publish_date': assgn_info['publishDate'],
         'assgn_expires': assgn_info['sourcingEndDate'],
         'start_date': assgn_info['startDate'],
-        'vol_category': assgn_info['volunteersCategoryDetails']['categoryName']['label'], 
+        'vol_category': None,
         'min_age': None,
         'max_age': None,
         'ed_lvl': assgn_info['requiredEducation']['label'],
@@ -91,6 +91,11 @@ def assignment_info(identifier):
         'dutystations': {},
         'languages': {}
     }
+
+    # Since 'volunteersCategoryDetails' may be None, I am moving its parsing here.
+    vol_category_details = assgn_info['volunteersCategoryDetails']
+    if vol_category_details is not None:
+        collected_info['vol_category'] = assgn_info['volunteersCategoryDetails']['categoryName']['label']
 
     # The age range is not specified for every assignment and is retrieved from another source.
     vol_category_code = assgn_info['volunteersCategoryCode']
@@ -129,6 +134,3 @@ def assignment_info(identifier):
         collected_info['languages'] = {'Not specified': {'level': 'Not specified', 'isrequired': False}}
 
     return collected_info
-
-if __name__ == '__main__':
-    print(assignment_info('1784888021268672'))
