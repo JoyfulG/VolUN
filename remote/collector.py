@@ -103,7 +103,13 @@ def assignment_info(identifier):
         age_range_url = f'https://app.unv.org/api/backoffice/masterTables/Category/values/{vol_category_code}/' \
                         f'children/ElegibilityCriteria/languages/EN'
         response_age_range = requests.get(age_range_url, headers=headers)
-        age_range_info = json.loads(response_age_range.text)['values'][2]['props']
+
+        age_range_info = next(
+            item['props']
+            for item in json.loads(response_age_range.text)['values']
+            if item.get('label') == 'Required age'
+        )
+
         collected_info['min_age'] = age_range_info['minValue']
         collected_info['max_age'] = age_range_info['maxValue']
 
